@@ -17,18 +17,23 @@ request.get({url:baseUrl, json:true}, function(error, response, body){
         let age = data.employee_age
         let salary = data.employee_salary
 
-        
+        // let query = 'insert into employee (employee_name) values '
+        // let values = '('+id+','+name+','+age+','+salary+')'
 
-        for(let q = 0; q < id.length; q++){
-            let query = 'insert into employee values (?,?,?,?)'
-            let values = [id , name , age, salary]
-    
-            connection.query(query, values,
-                function(error, results, fields){
-                    console.log(results)
-                })
-        }
+        // console.log ('insert into employee (employee_name) values ' + '('+id+','+name+','+age+','+salary+')')
+
+        connection.query('insert into employee (employee_name) values ' + '('+id+',"'+name+'",'+age+','+salary+')',
+            function(error, results, fields){
+                console.log(results)
+            })
+
     }
 
 })
+
 connection.end()
+
+// let id = data.id
+// let name = data.employee_name
+// let age = data.employee_age
+// let salary = data.employee_salary
