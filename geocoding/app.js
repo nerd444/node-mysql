@@ -19,10 +19,10 @@
 
 // 2. 유튜브의 내가 좋아하는 정보로 검색해서, 디비에 저장하기.
 const request = require('postman-request');
+const connection = require('./mysql-connection.js')
+
 const url = 'https://www.googleapis.com/youtube/v3/search?part=snippet&key=AIzaSyCpipXVTC4xf5-mxzRHDvGsPSRGISp632w&maxResults=10&order=date&type=video&regionCode=KR&q=잠'
 let encodedUrl = encodeURI(url)
-
-const connection = require('./mysql-connection.js')
 
 request.get({url:encodedUrl, json:true}, function(error, response, body){
         let itemsArray = body.items
