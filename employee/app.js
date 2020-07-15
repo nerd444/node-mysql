@@ -17,17 +17,31 @@ request.get({url:baseUrl, json:true}, function(error, response, body){
         let age = data.employee_age
         let salary = data.employee_salary
 
+<<<<<<< HEAD
         let query = `insert into employee values (${id}, "${name}", ${age}, ${salary})`
 
         connection.query(query,
             function(error, results, fields){
                 console.log(results)
             })
+=======
+        // let query = 'insert into employee (employee_name) values '
+        // let values = '('+id+','+name+','+age+','+salary+')'
+
+        // console.log ('insert into employee (employee_name) values ' + '('+id+','+name+','+age+','+salary+')')
+
+        connection.query('insert into employee (employee_name) values ' + '('+id+',"'+name+'",'+age+','+salary+')',
+            function(error, results, fields){
+                console.log(results)
+            })
+
+>>>>>>> f767274e8f1365263ccf7393aaffa2e77409895d
     }
 
     connection.end()
 })
 
+<<<<<<< HEAD
 
 // const request = require('postman-request')
 
@@ -68,3 +82,11 @@ request.get({url:baseUrl, json:true}, function(error, response, body){
 // // let name = data.employee_name
 // // let age = data.employee_age
 // // let salary = data.employee_salary
+=======
+connection.end()
+
+// let id = data.id
+// let name = data.employee_name
+// let age = data.employee_age
+// let salary = data.employee_salary
+>>>>>>> f767274e8f1365263ccf7393aaffa2e77409895d
