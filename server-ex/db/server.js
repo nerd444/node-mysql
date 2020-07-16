@@ -1,9 +1,9 @@
-// express : 웹 서버를 동작시키는 프레임워크
+// const connection = require("./mysql-connection.js");
 const express = require("express");
 const dotenv = require("dotenv");
 
 // 우리가 만든 라우터 파일 가져온다.
-const bootcamps = require("./routes/bootcamps");
+const memo = require("./memo");
 
 // 환경 설정 파일의 내용을 로딩한다.
 dotenv.config({ path: "./config/config.env" });
@@ -22,7 +22,7 @@ const logger = (req, res, next) => {
 app.use(logger);
 
 // 라우터 연결 : url의 path와 라우터 파일과 연결
-app.use("/api/v1/bootcamps", bootcamps);
+app.use("/api/v1/memo", memo);
 
 // 환경설정 파일인, config.env 파일에 있는 내용을 불러오는 방법.
 const PORT = process.eventNames.PORT || 5000;
