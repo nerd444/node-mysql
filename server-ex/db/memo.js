@@ -1,39 +1,21 @@
+const express = require("express");
 const connection = require("./mysql-connection.js");
 // @desc 모든 정보를 다 조회
-// @route GET /api/v1/bootcamps
+// @route GET /api/v1/memos
 // @access Public
 exports.getMemo = (req, res, next) => {
-  res.status(200).json({
-    success: true,
-    title: connection.query("select title from memo_api", function (
-      error,
-      results,
-      fields
-    ) {
-      console.log(results);
-    }),
-    memo: connection.query("select memo from memo_api", function (
-      error,
-      results,
-      fields
-    ) {
-      console.log(results);
-    }),
-  });
+
+  connection.query(`select * from memos`, function(error, results, fields){
+    console.log(results);
+  })
+
+  res.status(200).json({success:true, type:"select", msg:results});
+
+  connection.end();
 };
 
-//   // @desc 해당 아이디의 정보 조회
-//   // @route GET /api/v1/bootcamps/id
-//   // @access Public
-//   exports.getBootcamp = (req, res, next) => {
-//     res.status(200).json({
-//       success: true,
-//       msg: `Show bootcamp ${req.params.id}번`,
-//     });
-//   };
-
 // @desc 새로운 정보를 인서트
-// @route POST /api/v1/title/memo
+// @route POST /api/v1/title/memos/title/content
 // @access Public
 exports.createMemo = (req, res, next) => {
   res.status(200).json({
@@ -59,14 +41,22 @@ exports.createMemo = (req, res, next) => {
 exports.updateTitle = (req, res, next) => {
   res.status(200).json({
     success: true,
-    reTitle: connection.query(
-      `update memo_api set title = "${req.params.reTitle}" where title = "${req.params.reTitle}"`,
+    id: connection.query(
+      `${req.params.id}`,
       function (error, results, fields) {
         console.log(results);
       }
     ),
+  res.status(200).json({
+    success: true,
     title: connection.query(
-      `update memo_api set title = "${req.params.title}" where title = "${req.params.title}"`,
+      `update memos set title = "${req.params.reTitle}" where id = ${req.params.id}`,
+      function (error, results, fields) {
+        console.log(results);
+      }
+    ),
+    memo: connection.query(
+      `update memos set content = "${req.params.memo}" where id = ${req.params.id}`,
       function (error, results, fields) {
         console.log(results);
       }
