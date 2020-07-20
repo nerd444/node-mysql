@@ -1,26 +1,26 @@
 const connection = require("../db/mysql-connection");
-const ErrorResponse = require("../utils/errorResponse");
+const ErrorResponse = require("../utils/errorResponse ");
 
 // @desc 모든 정보를 다 조회
-// @route GET /api/v1/bootcamps
+// @route GET /api/v1/contacts
 // @access Public
-exports.getBootcamps = async (req, res, next) => {
+exports.getContacts = async (req, res, next) => {
   try {
-    const [rows, fields] = await connection.query(`select * from bootcamp`);
+    const [rows, fields] = await connection.query(`select * from contact`);
     res.status(200).json({ success: true, items: rows });
   } catch (e) {
-    next(new ErrorResponse("부트캠프 전부 가져오는데 에러 발생", 400));
+    next(new ErrorResponse("주소록 전부 가져오는데 에러 발생", 400));
   }
 };
 
 // @desc 해당 아이디의 정보 조회
-// @route GET /api/v1/bootcamps/id
+// @route GET /api/v1/contacts/id
 // @access Public
-exports.getBootcamp = async (req, res, next) => {
+exports.getContact = async (req, res, next) => {
   try {
     let id = req.params.id;
     const [rows, fields] = await connection.query(
-      `select * from bootcamp where id = ${id}`
+      `select * from contact where id = ${id}`
     );
     if (rows.length != 0) {
       res.status(200).json({ success: true, items: rows });
@@ -28,21 +28,19 @@ exports.getBootcamp = async (req, res, next) => {
       return next(new ErrorResponse("아이디값 잘못 보냈음", 400));
     }
   } catch (e) {
-    next(new ErrorResponse("부트캠프 가져오는데 DB에러 발생", 500));
+    next(new ErrorResponse("주소록 가져오는데 DB에러 발생", 500));
   }
 };
 
 // @desc 새로운 정보를 인서트
-// @route POST /api/v1/bootcamps
+// @route POST /api/v1/contacts
 // @access Public
-exports.createBootcamp = async (req, res, next) => {
-  let title = req.body.title;
-  let subject = req.body.subject;
-  let teacher = req.body.teacher;
-  let start_time = req.body.start_time;
+exports.createContact = async (req, res, next) => {
+  let name = req.body.name;
+  let phone_number = req.body.phone_number;
   try {
     const [rows, fields] = await connection.query(
-      `insert into bootcamp (title, subject, teacher, start_time) values ("${title}", "${subject}", "${teacher}", "${start_time}")`
+      `insert into contact (name, phone_number) values ("${name}", "${phone_number}")`
     );
     res.status(200).json({ success: true, ret: rows });
   } catch (e) {
@@ -51,17 +49,15 @@ exports.createBootcamp = async (req, res, next) => {
 };
 
 // @desc 기존 정보를 업데이트
-// @route PUT /api/v1/bootcamps/id
+// @route PUT /api/v1/contacts/id
 // @access Public
-exports.updateBootcamp = async (req, res, next) => {
+exports.updateContact = async (req, res, next) => {
   let id = req.params.id;
-  let title = req.body.title;
-  let subject = req.body.subject;
-  let teacher = req.body.teacher;
-  let start_time = req.body.start_time;
+  let name = req.body.name;
+  let phone_number = req.body.phone_number;
   try {
     const [rows, fields] = await connection.query(
-      `update bootcamp set title = "${title}",subject = "${subject}",teacher = "${teacher}", start_time = "${start_time}" where id = ${id}`
+      `update contact set name = "${name}",phone_number = "${phone_number}" where id = ${id}`
     );
     res.status(200).json({ success: true, ret: rows });
   } catch (e) {
@@ -70,13 +66,13 @@ exports.updateBootcamp = async (req, res, next) => {
 };
 
 // @desc 해당 정보를 삭제
-// @route DELETE /api/v1/bootcamps/id
+// @route DELETE /api/v1/contacts/id
 // @access Public
-exports.deleteBootcamp = async (req, res, next) => {
+exports.deleteContact = async (req, res, next) => {
   let id = req.params.id;
   try {
     const [rows, fields] = await connection.query(
-      `delete from bootcamp where id = ${id}`
+      `delete from contact where id = ${id}`
     );
     res.status(200).json({ success: true, ret: rows });
   } catch (e) {
