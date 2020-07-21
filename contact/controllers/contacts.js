@@ -1,13 +1,22 @@
 const connection = require("../db/mysql-connection");
-const ErrorResponse = require("../utils/errorResponse ");
+const ErrorResponse = require("../utils/errorResponse");
 
-// @desc 모든 정보를 다 조회
-// @route GET /api/v1/contacts
+// 모든 주소록 데이터를 다 가져와서, 클라이언트한테 보내는것은 문제가 있습니다.
+// 데이터를 모두 다 보내지 않고, 끊어서 보내야 함.
+// 현업에서는 20~30개 사이로 끊어서 보냅니다.
+
+// @desc 모든 주소록정보를 다 조회
+// @route GET /api/v1/contacts?offset=0&limit=20
 // @access Public
 exports.getContacts = async (req, res, next) => {
   try {
-    const [rows, fields] = await connection.query(`select * from contact`);
-    res.status(200).json({ success: true, items: rows });
+    let offset = req.query.offset;
+    let limit = req.query.limit;
+    const [rows, fields] = await connection.query(
+      `select * from contact limit ${offset}, ${limit}`
+    );
+    let count = rows.length;
+    res.status(200).json({ success: true, items: rows, count: count });
   } catch (e) {
     next(new ErrorResponse("주소록 전부 가져오는데 에러 발생", 400));
   }
@@ -32,15 +41,30 @@ exports.getContact = async (req, res, next) => {
   }
 };
 
+// @desc 이름이나, 전화번호로 검색하는 API
+// @route GET /api/v1/contacts/search?keyword=67
+// @route GET /api/v1/contacts/search?keyword=길동
+exports.searchContact = async (req, res, next) => {
+  let keyword = req.query.keyword;
+  try {
+    const [rows, fields] = await connection.query(
+      `select * from contact where name like "%${keyword}%" or phone like "%${keyword}%"`
+    );
+    res.status(200).json({ success: true, ret: rows });
+  } catch (e) {
+    res.status(500).json({ success: false, error: e });
+  }
+};
+
 // @desc 새로운 정보를 인서트
 // @route POST /api/v1/contacts
 // @access Public
 exports.createContact = async (req, res, next) => {
   let name = req.body.name;
-  let phone_number = req.body.phone_number;
+  let phone = req.body.phone;
   try {
     const [rows, fields] = await connection.query(
-      `insert into contact (name, phone_number) values ("${name}", "${phone_number}")`
+      `insert into contact (name, phone) values ("${name}", "${phone}")`
     );
     res.status(200).json({ success: true, ret: rows });
   } catch (e) {
@@ -54,10 +78,10 @@ exports.createContact = async (req, res, next) => {
 exports.updateContact = async (req, res, next) => {
   let id = req.params.id;
   let name = req.body.name;
-  let phone_number = req.body.phone_number;
+  let phone = req.body.phone;
   try {
     const [rows, fields] = await connection.query(
-      `update contact set name = "${name}",phone_number = "${phone_number}" where id = ${id}`
+      `update contact set name = "${name}",phone = "${phone}" where id = ${id}`
     );
     res.status(200).json({ success: true, ret: rows });
   } catch (e) {
@@ -80,9 +104,9 @@ exports.deleteContact = async (req, res, next) => {
   }
 };
 
-// exports.deleteBootcamp = async (req, res, next) => {
+// exports.deleteContact = async (req, res, next) => {
 //   let id = req.params.id;
-//   let query = `delete from bootcamp where id = ${id}`;
+//   let query = `delete from contact where id = ${id}`;
 //   try {
 //     [result] = await connection.query(query);
 //     console.log(result);
