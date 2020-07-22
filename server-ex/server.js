@@ -26,6 +26,17 @@ app.use(logger);
 
 app.use(morgan("combined"));
 
+app.use(function (req, res, next) {
+  // if (req.method === "GET") {
+  //   res.json({ alert: "GET requests are disabled" });
+  // } else {
+  //   next();
+  // }
+  res
+    .status(503)
+    .send("사이트에 문제가 있슴다. 나중에 다시 방문해주세오~*^^*!");
+});
+
 // 라우터 연결 : url의 path와 라우터 파일(bootcamps)과 연결
 app.use("/api/v1/bootcamps", bootcamps);
 
@@ -41,3 +52,13 @@ const PORT = process.eventNames.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
 });
+
+// // server.js
+// var jwt = require("jsonwebtoken");
+// var token = jwt.sign({ user_id: 1 }, "dlwnsqudtls");
+// console.log(token);
+// console.log(process.env.ACCESS_TOKEN_SECRET);
+
+// // 클라언트로부터 받은 토큰이, 진짜인지 확인하는 작업
+// const data = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+// console.log(data);
