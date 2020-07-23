@@ -136,22 +136,9 @@ exports.updatePasswd = async (req, res, next) => {
 
 // 유저의 id 값으로 내 정보를 가져오는 API개발
 // @desc    내정보 가져오기
-// @route   GET /api/v1/users/:id
+// @route   GET /api/v1/users
 exports.getMyInfo = async (req, res, next) => {
-  let id = req.params.id;
+  console.log("내 정보 가져오는 API", req.user);
 
-  let query = `select * from user where id = ${id}`;
-
-  try {
-    [rows] = await connection.query(query);
-    if (rows.length != 1) {
-      res.status(400).json({ success: false });
-    } else {
-      // 패스워드부분만 안보이게 함.
-      delete rows[0].passwd;
-      res.status(200).json({ success: true, result: rows[0] });
-    }
-  } catch (e) {
-    res.status(500).json({ success: false, error: e });
-  }
+  res.status(200).json({ success: true, result: req.user });
 };

@@ -3,9 +3,11 @@ const express = require("express");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
 
+// 미들웨어에 대한 require
 const logger = require("./middleware/logger");
 const errorHandler = require("./middleware/error");
 
+// 라우터에 대한 require
 // 우리가 만든 라우터 파일 가져온다.
 const bootcamps = require("./routes/bootcamps");
 const users = require("./routes/users");
@@ -26,16 +28,16 @@ app.use(logger);
 
 app.use(morgan("combined"));
 
-app.use(function (req, res, next) {
-  // if (req.method === "GET") {
-  //   res.json({ alert: "GET requests are disabled" });
-  // } else {
-  //   next();
-  // }
-  res
-    .status(503)
-    .send("사이트에 문제가 있슴다. 나중에 다시 방문해주세오~*^^*!");
-});
+// app.use(function (req, res, next) {
+// if (req.method === "GET") {
+//   res.json({ alert: "GET requests are disabled" });
+// } else {
+//   next();
+// }
+//   res
+//     .status(503)
+//     .send("사이트에 문제가 있슴다. 나중에 다시 방문해주세오~*^^*!");
+// });
 
 // 라우터 연결 : url의 path와 라우터 파일(bootcamps)과 연결
 app.use("/api/v1/bootcamps", bootcamps);

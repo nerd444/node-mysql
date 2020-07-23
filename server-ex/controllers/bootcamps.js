@@ -5,6 +5,7 @@ const ErrorResponse = require("../utils/errorResponse");
 // @route GET /api/v1/bootcamps
 // @access Public
 exports.getBootcamps = async (req, res, next) => {
+  console.log("부트캠프 전부 가져오는 함수");
   try {
     const [rows, fields] = await connection.query(`select * from bootcamp`);
     res.status(200).json({ success: true, items: rows });
