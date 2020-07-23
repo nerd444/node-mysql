@@ -6,13 +6,14 @@ const {
   createMemos,
   updateMemos,
   deleteMemos,
-  signUp,
 } = require("../controllers/memos");
+const { createUser, loginUser } = require("../controllers/users");
 
 const router = express.Router();
 
 router.route("/").get(getMemos).post(createMemos);
 router.route("/:id").put(updateMemos).delete(deleteMemos);
-router.route("/signUp").post(signUp);
+router.route("/signUp").post(createUser);
+router.route("/users/login").post(loginUser);
 
 module.exports = router;
