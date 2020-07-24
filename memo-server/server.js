@@ -10,7 +10,9 @@ const app = express();
 // post사용시, body부분을 json으로 사용하겠다.
 app.use(express.json());
 
+// 메모처리부분
 app.use("/api/v1/memos", memos);
+// 유저처리부분
 app.use("/api/v1/users", users);
 
 const PORT = process.env.PORT || 5100;

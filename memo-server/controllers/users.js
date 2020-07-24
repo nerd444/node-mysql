@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt");
 const validator = require("validator");
 
 // @desc    회원가입
-// @route   POST /api/v1/signUp
+// @route   POST /api/v1/users
 // @parameters  email, passwd
 exports.createUser = async (req, res, next) => {
   // 클라이언트로부터 이메일, 비번 받아서 변수로 만들자
@@ -54,8 +54,9 @@ exports.createUser = async (req, res, next) => {
 };
 
 // @desc    로그인
-// @route   POST /api/v1/users
-// @parameters  email, passwd
+// @route   POST /api/v1/users/login
+// @request  email, passwd
+// @reqponse  success, token
 exports.loginUser = async (req, res, next) => {
   let email = req.body.email;
   let passwd = req.body.passwd;
@@ -63,14 +64,17 @@ exports.loginUser = async (req, res, next) => {
   let query = `select * from memo_user where email = "${email}"`;
   try {
     [rows] = await connection.query(query);
-    // 디비에 저장된 비밀번호 가져와서
-    let savedPasswd = rows[0].passwd;
+
+    if (rows.length == 0) {
+      res.status(400).json({ success: false, message: "없는 아이디입니다" });
+      return;
+    }
+
     // 비밀번호 체크 : 비밀번호가 서로 맞는지 확인
-    let isMatch = await bcrypt.compare(passwd, savedPasswd);
-    // let isMatch = bcrypt.compareSync(passwd, savedPasswd); 위랑 같은거
+    let isMatch = await bcrypt.compare(passwd, rows[0].passwd);
     if (isMatch == false) {
       res
-        .status(400)
+        .status(401)
         .json({ success: false, result: isMatch, message: "비밀번호가 틀림" });
       return;
     }
@@ -88,10 +92,25 @@ exports.loginUser = async (req, res, next) => {
         token: token,
         message: "로그인되었습니다",
       });
+      return;
     } catch (e) {
       res.status(500).json({ success: false, error: e });
+      return;
     }
   } catch (e) {
     res.status(500).json({ success: false, error: e });
+    return;
   }
+};
+
+// @desc    내 정보 가져오는 API
+// @route   GET /api/v1/users/me
+// @request
+// @response  id, email, created_at
+exports.my_Info = (req, res, next) => {
+  // 인증 토큰 검증 통과해서 이 함수로 온다.
+
+  let userInfo = req.user;
+
+  res.status(200).json({ success: true, info: userInfo });
 };
