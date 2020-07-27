@@ -17,6 +17,7 @@
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
     "mysql2": "^2.1.0",
+    "nodemailer": "^6.4.10",
     "postman-request": "^2.88.1-postman.23",
     "sql": "^0.78.0",
     "validator": "^13.1.1"

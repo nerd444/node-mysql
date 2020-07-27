@@ -7,6 +7,13 @@ const connection = require("../db/mysql-connection");
 const auth = async (req, res, next) => {
   console.log("인증 미들웨어");
   let token = req.header("Authorization");
+
+  // token이 없을경우 아래처럼 처리
+  if (!token) {
+    req.status(401).json({ error: "NOT token" });
+    return;
+  }
+
   token = token.replace("Bearer ", "");
   console.log(token);
 
@@ -50,6 +57,7 @@ const auth = async (req, res, next) => {
       // 패스워드 정보는 필요없으니, 삭제하고 req에 담아줄것.
       delete user.passwd;
       req.user = user;
+      req.user.token = token;
       next();
     } catch (e) {
       res.status(500).json({ error: "DB 에러" });
