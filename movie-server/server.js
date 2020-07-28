@@ -2,6 +2,8 @@ const express = require("express");
 const dotenv = require("dotenv");
 
 const movies = require("./routes/movies");
+const users = require("./routes/users");
+
 // 환경설정 파일 로딩
 dotenv.config({ path: "./config/config.env" });
 
@@ -10,6 +12,7 @@ const app = express();
 app.use(express.json());
 
 app.use("/api/v1/movies", movies);
+app.use("/api/v1/users", users);
 
 const PORT = process.env.PORT || 5400;
 
