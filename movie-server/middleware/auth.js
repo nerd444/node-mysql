@@ -1,74 +1,52 @@
-// 클라이언트의 헤더 셋팅된
-// Authorization 값(Token) 을 확인하여 인증한다.
-
 const jwt = require("jsonwebtoken");
 const connection = require("../db/mysql-connection");
 
 const auth = async (req, res, next) => {
-  console.log("인증 미들웨어");
-  let token = req.header("Authorization");
-
-  // token이 없을경우 아래처럼 처리
-  if (!token) {
-    req.status(401).json({ error: "NOT token" });
+  let token;
+  try {
+    token = req.header("Authorization");
+    token = token.replace("Bearer ", "");
+    if (!token) {
+      req.status(401).json({ error: "NOT token" });
+      return;
+    }
+  } catch (e) {
+    res.status(401).json();
     return;
   }
 
-  token = token.replace("Bearer ", "");
   console.log(token);
 
-  // 1. 토큰에 저장된 정보를 디코드 한다.
   let user_id;
   try {
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    console.log(decoded);
     user_id = decoded.user_id;
   } catch (e) {
-    res.status(401).json({ error: "이상한 토큰 보내지마!." });
+    res.status(401).json({ error: "이상한 토큰입니다" });
     return;
   }
 
-  // 2. 위의 유저아이디로, DB에서 token정보를 가져온다.
-  let query = `select * from movie_token where user_id = ${user_id}`;
+  let query =
+    "select u.id, u.email, u.created_at, t.token \
+  from movie_user as u \
+  join movie_token as t \
+  on u.id = t.user_id \
+  where t.user_id = ? and t.token = ?;";
+
+  let data = [user_id, token];
+
   try {
-    [rows] = await connection.query(query);
-    console.log(rows);
-    let movie_token = rows[0];
-    req.movie_token = movie_token;
-    next();
-  } catch (e) {
-    res.status(500).json({ error: "DB 에러" });
-    return;
-  }
-
-  // 반복문 돌면서, 유저 아이디와 토큰이 맞는지 체크
-  let isCorrect = false;
-  for (let i = 0; i < rows.length; i++) {
-    if (rows[i].user_id == user_id && rows[i].token == token) {
-      isCorrect = true;
-      break;
-    }
-  }
-  // 유효한 토큰이 맞으니까, 유저 정보를 db에서 가져옵니다.
-  if (isCorrect) {
-    query = `select * from movie_user where id = ${user_id}`;
-    try {
-      [rows] = await connection.query(query);
-      // 유저 정보를, req에 셋팅해서 next()한다.
-      // 이유? 인증하면서, 유저 정보를 아예 가져와서 req에 저장시키기 때문에,
-      // API함수에서는 유저 정보를 가져오는 코드 작성이 필요 없다.
-      console.log(rows[0]);
-      let user = rows[0];
-      // 패스워드 정보는 필요없으니, 삭제하고 req에 담아줄것.
-      delete user.passwd;
-      req.user = user;
-      req.user.token = token;
+    [rows] = await connection.query(query, data);
+    if (rows.length == 0) {
+      res.status(401).json();
+      return;
+    } else {
+      req.user = rows[0];
       next();
-    } catch (e) {
-      res.status(500).json({ error: "DB 에러2" });
     }
-  } else {
-    res.status(401).json({ error: "인증이 안된 토큰입니다." });
+  } catch (e) {
+    res.status(500).json();
+    return;
   }
 };
 
