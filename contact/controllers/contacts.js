@@ -56,7 +56,7 @@ exports.searchContact = async (req, res, next) => {
   }
 };
 
-// @desc 새로운 정보를 인서트
+// @desc  주소록 1개 추가하기
 // @route POST /api/v1/contacts
 // @access Public
 exports.createContact = async (req, res, next) => {
@@ -72,7 +72,7 @@ exports.createContact = async (req, res, next) => {
   }
 };
 
-// @desc 기존 정보를 업데이트
+// @desc  주소록 수정하기
 // @route PUT /api/v1/contacts/id
 // @access Public
 exports.updateContact = async (req, res, next) => {
@@ -89,7 +89,7 @@ exports.updateContact = async (req, res, next) => {
   }
 };
 
-// @desc 해당 정보를 삭제
+// @desc  주소록 삭제
 // @route DELETE /api/v1/contacts/id
 // @access Public
 exports.deleteContact = async (req, res, next) => {

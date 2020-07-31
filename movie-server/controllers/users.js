@@ -1,6 +1,7 @@
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const path = require("path");
 const connection = require("../db/mysql-connection");
 
 // @desc    회원가입
@@ -107,3 +108,72 @@ exports.logout = async (req, res, next) => {
     res.status(500).json({ success: false, error: e });
   }
 };
+
+// @desc      유저의 프로필 사진 설정하는 API
+// @route     PUT /api/v1/users/me/photo
+// @request   photo
+// @response  success
+
+// 클라이언트가 사진을 보낸다. => 서버가 이 사진을 받는다. =>
+// 서버가 이 사진을 디렉토리에 저장한다. => 이 사진의 파일명을 DB에 저장한다.
+exports.userPhotoUpload = async (req, res, next) => {
+  let user_id = req.user.id;
+  // 사진을 받으면 req.files에 들어있음.
+  if (!user_id || !req.files) {
+    res.status(400).json({ message: "뭐 하나 없는거 같지 않니...?" });
+    return;
+  }
+  console.log(req.files);
+
+  const photo = req.files.photo;
+  // 지금 받은 파일이, 이미지 파일인지 체크
+  // startsWith() => ()안에 있는 걸로 시작하냐?
+  if (photo.mimetype.startsWith("image") == false) {
+    res.status(400).json({ message: "이미지 파일이 아닙니다." });
+    return;
+  }
+
+  if (photo.size > process.env.MAX_FILE_SIZE) {
+    res.status(400).json({ message: "파일크기가 정해진것보다 커!" });
+    return;
+  }
+
+  // 파일명 = ${path.parse(photo.name).ext} => jpg (ext = 앞의 확장자명을 가져옴), path다운이유쓰
+  // fall.jpg => photo_3.jpg
+  // path 의 parse는 이름과 확장자명을 파싱하는데 우리는 이름은 버리고 확장자명만 가져옴.
+  photo.name = `photo_${user_id}${path.parse(photo.name).ext}`;
+
+  // 저장할 경로 셋팅 = ./public/upload/photo_3.jpg
+  let fileUploadPath = `${process.env.FILE_UPLOAD_PATH}/${photo.name}`;
+
+  // 파일을 우리가 지정한 경로에 저장.
+  photo.mv(fileUploadPath, async (err) => {
+    if (err) {
+      console.errno(err);
+      return;
+    }
+  });
+
+  // db에 이 파일이름을 업데이트 한다.
+  let query = `update movie_user set photo_url = "${photo.name}" where id = ${user_id}`;
+  try {
+    [result] = await connection.query(query);
+    res.status(200).json({ success: true, message: "사진 잘 받아옴" });
+  } catch (e) {
+    res.status(500).json({ success: false });
+  }
+};
+
+// {
+//   photo: {
+//     name: 'fall.jpg',
+//     data: <Buffer ff d8 ff e0 00 10 4a 46 49 46 00 01 01 00 00 01 00 01 00 00 ff db 00 84 00 08 08 08 08 09 08 09 0a 0a 09 0d 0e 0c 0e 0d 13 12 10 10 12 13 1d 15 16 15 ... 1619565 more bytes>,
+//     size: 1619615,
+//     encoding: '7bit',
+//     tempFilePath: '',
+//     truncated: false,
+//     mimetype: 'image/jpeg',
+//     md5: '30fb7544a4c8400608908ec25fe666f3',
+//     mv: [Function: mv]
+//   }
+// }

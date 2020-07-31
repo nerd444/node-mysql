@@ -7,11 +7,8 @@ const logger = require("./middleware/logger");
 const errorHandler = require("./middleware/error");
 
 // 우리가 만든 라우터 파일 가져온다.
-<<<<<<< HEAD:server-ex/db/server.js
-const memos = require("./memos-routes");
-=======
 const contacts = require("./routes/contacts");
->>>>>>> ecd8763c8ca3b33ec9c45d67eaf8bf34e5baf49b:contact/server.js
+const users = require("./routes/user");
 
 // 환경 설정 파일의 내용을 로딩한다.
 dotenv.config({ path: "./config/config.env" });
@@ -30,14 +27,11 @@ app.use(logger);
 app.use(morgan("combined"));
 
 // 라우터 연결 : url의 path와 라우터 파일과 연결
-<<<<<<< HEAD:server-ex/db/server.js
-app.use("/api/v1/memos", memos);
-=======
 app.use("/api/v1/contacts", contacts);
+app.use("/api/v1/users", users);
 
 // 위의 에러를 처리하기 위해서, 에러 핸들러 미들웨어 연결
 app.use(errorHandler);
->>>>>>> ecd8763c8ca3b33ec9c45d67eaf8bf34e5baf49b:contact/server.js
 
 // 환경설정 파일인, config.env 파일에 있는 내용을 불러오는 방법.
 const PORT = process.eventNames.PORT || 5200;
