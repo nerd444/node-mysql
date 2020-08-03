@@ -33,7 +33,7 @@ app.use("/api/v1/users", users);
 app.use(errorHandler);
 
 // 환경설정 파일인, config.env 파일에 있는 내용을 불러오는 방법.
-const PORT = process.eventNames.PORT || 5200;
+const PORT = process.env.PORT || 5200;
 
 app.listen(PORT, () => {
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
