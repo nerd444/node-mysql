@@ -1,6 +1,8 @@
 // express : 웹 서버를 동작시키는 프레임워크
 const express = require("express");
 const dotenv = require("dotenv");
+// 환경 설정 파일의 내용을 로딩한다.
+dotenv.config({ path: "./config/config.env" });
 const morgan = require("morgan");
 
 const logger = require("./middleware/logger");
@@ -9,9 +11,6 @@ const errorHandler = require("./middleware/error");
 // 우리가 만든 라우터 파일 가져온다.
 const contacts = require("./routes/contacts");
 const users = require("./routes/user");
-
-// 환경 설정 파일의 내용을 로딩한다.
-dotenv.config({ path: "./config/config.env" });
 
 // 웹서버 프레임워크인 익스프레스를 가져온다.
 const app = express();
